@@ -1,0 +1,9 @@
+# Python virtual environment
+.venv/
+
+# Generated PDF pages
+printed_pages/
+
+# JetBrains IDE metadata
+.idea/
+
