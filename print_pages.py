@@ -1,13 +1,22 @@
-from playwright.sync_api import sync_playwright
+import importlib
 from pathlib import Path
 import time
 
-START_URL = "http://xjtu.zglz.cascorpus.com/main/simplex/text/79fda5f6-fb00-4333-d904-08d9fb38a152"
+
+try:
+    sync_playwright = importlib.import_module("playwright.sync_api").sync_playwright
+except ModuleNotFoundError as exc:
+    raise ModuleNotFoundError(
+        "未找到 Playwright，请先运行：python -m pip install playwright"
+    ) from exc
+
+# START_URL = "http://xjtu.zglz.cascorpus.com/main/simplex/text/79fda5f6-fb00-4333-d904-08d9fb38a152"
+START_URL = "http://47.99.141.240/main/simplex/text/79fda5f6-fb00-4333-d904-08d9fb38a152"
 
 OUTPUT_DIR = Path("printed_pages")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
-MAX_PAGES = 30  # 最大打印页数
+MAX_PAGES = 200  # 最大打印页数
 
 def wait_for_changing_chapter() -> bool:
     user_input = input("手动选择需要打印的章节，输入“1”继续，输入“q”退出...")
@@ -35,13 +44,13 @@ def main():
         while wait_for_changing_chapter():
 
             for j in range(1, MAX_PAGES + 1):
-                print(f"正在保存{i}{j:02d}……")
+                print(f"正在保存{i}_{j:03d}……")
 
                 page.wait_for_load_state("networkidle")
                 # 防止动画/延迟渲染
                 time.sleep(5)
 
-                pdf_path = OUTPUT_DIR / f"page_{i}{j:02d}.pdf"
+                pdf_path = OUTPUT_DIR / f"page_{i}_{j:03d}.pdf"
 
                 page.pdf(
                     path=str(pdf_path),
